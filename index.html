@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BOYNEXTDOOR Photocard Dex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; background: #0f0f14; color: #fff; }
+    header { padding: 16px; text-align: center; background: #151521; position: sticky; top: 0; z-index: 10; }
+    h1 { margin: 0; font-size: 22px; }
+    .container { padding: 16px; max-width: 1200px; margin: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .card { background: #1b1b2a; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.3); }
+    .back { margin-bottom: 12px; cursor: pointer; color: #aab; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .photo-card { background: #1b1b2a; border-radius: 12px; overflow: hidden; }
+    .photo-card img { width: 100%; display: block; }
+    .photo-info { padding: 8px; font-size: 13px; }
+    .photo-card img.blur {
+      filter: blur(6px);
+      transition: filter 0.3s;
+      cursor: pointer;
+    }
+    .photo-card img.clear {
+      filter: blur(0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BOYNEXTDOOR Photocard</h1>
+  </header>
+
+  <div class="container" id="app"></div>
+
+  <script>
+    const members = ["SUNGHO", "RIWOO", "JAEHYUN", "TAESAN", "LEEHAN", "WOONHAK"];
+    const albums = ["WHO!", "WHY..", "HOW?", "AND,", "19.99", "No Genre", "The Action", "ETC"];
+
+    // Add your photocards here
+    const photocards = [
+      {
+        member: "TAESAN",
+        album: "The Action",
+        image: "images/t_tc_PLAY.jpg",
+        site: "PLAY ver.",
+      },
+      {
+        member: "TAESAN",
+        album: "The Action",
+        image: "images/t_tc_LOADING.jpg",
+        site: "LOADING ver.",
+      },
+      {
+        member: "TAESAN",
+        album: "The Action",
+        image: "images/t_tc_PAUSE.jpg",
+        site: "PAUSE ver.",
+      },
+      {
+        member: "TAESAN",
+        album: "The Action",
+        image: "images/t_tc_FRAME.jpg",
+        site: "FRAME ver.",
+      },
+      {
+        member: "TAESAN",
+        album: "The Action",
+        image: "images/t_tc_WEVERSE.jpg",
+        site: "WEVERSE ver.",
+      },
+    ];
+
+    const app = document.getElementById("app");
+
+    function showMembers() {
+      app.innerHTML = `<div class='grid'>${members.map(m => `<div class='card' onclick='showAlbums("${m}")'>${m}</div>`).join("")}</div>`;
+    }
+
+    function showAlbums(member) {
+      app.innerHTML = `
+        <div class='back' onclick='showMembers()'>← Back to Members</div>
+        <h2>${member}</h2>
+        <div class='grid'>
+          ${albums.map(a => `<div class='card' onclick='showPhotocards("${member}", "${a}")'>${a}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    function showPhotocards(member, album) {
+      const list = photocards.filter(p => p.member === member && p.album === album);
+
+      app.innerHTML = `
+        <div class='back' onclick='showAlbums("${member}")'>← Back to Albums</div>
+        <h2>${member} – ${album}</h2>
+        <div class='photo-grid'>
+          ${list.map(p => `
+  <div class='photo-card'>
+    <img src='${p.image}' 
+     alt='${p.member} ${p.album}' 
+     class='${localStorage.getItem(p.member + "_" + p.album + "_" + p.image) ? "clear" : "blur"}'
+     data-key='${p.member}_${p.album}_${p.image}'
+     onclick='toggleOwned(this)'>
+    <div class='photo-info'>${p.site}</div>
+  </div>
+`).join("")}
+        </div>
+      `;
+    }
+
+    showMembers();
+    function toggleOwned(img) {
+      const key = img.dataset.key;
+
+      if (img.classList.contains("blur")) {
+        img.classList.remove("blur");
+        img.classList.add("clear");
+        localStorage.setItem(key, "owned");
+      } else {
+        img.classList.remove("clear");
+        img.classList.add("blur");
+        localStorage.removeItem(key);
+      }
+    }
+  </script>
+</body>
+</html>
