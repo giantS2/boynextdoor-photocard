@@ -13,7 +13,7 @@
     .card { background: #1b1b2a; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: transform .15s, box-shadow .15s; }
     .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.3); }
     .back { margin-bottom: 12px; cursor: pointer; color: #aab; }
-    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
     .photo-card { background: #1b1b2a; border-radius: 12px; overflow: hidden; }
     .photo-card img { width: 100%; display: block; }
     .photo-info { padding: 8px; font-size: 13px; }
@@ -38,39 +38,23 @@
     const members = ["SUNGHO", "RIWOO", "JAEHYUN", "TAESAN", "LEEHAN", "WOONHAK"];
     const albums = ["WHO!", "WHY..", "HOW?", "AND,", "19.99", "No Genre", "The Action", "ETC"];
 
-    // Add your photocards here
-    const photocards = [
-      {
-        member: "TAESAN",
-        album: "The Action",
-        image: "images/t_tc_PLAY.jpg",
-        site: "PLAY ver.",
-      },
-      {
-        member: "TAESAN",
-        album: "The Action",
-        image: "images/t_tc_LOADING.jpg",
-        site: "LOADING ver.",
-      },
-      {
-        member: "TAESAN",
-        album: "The Action",
-        image: "images/t_tc_PAUSE.jpg",
-        site: "PAUSE ver.",
-      },
-      {
-        member: "TAESAN",
-        album: "The Action",
-        image: "images/t_tc_FRAME.jpg",
-        site: "FRAME ver.",
-      },
-      {
-        member: "TAESAN",
-        album: "The Action",
-        image: "images/t_tc_WEVERSE.jpg",
-        site: "WEVERSE ver.",
-      },
-    ];
+    let photocards = [];
+
+    fetch("data.csv")
+            .then(res => res.text())
+            .then(text => {
+              const rows = text.trim().split("\n").slice(1); // 첫 줄(헤더) 제외
+              rows.forEach(row => {
+                const [member, album, image, site] = row.split(",");
+                photocards.push({
+                  member: member.trim(),
+                  album: album.trim(),
+                  image: "images/" + image.trim(),
+                  site: site.trim()
+                });
+              });
+              showMembers(); // CSV 다 불러온 다음 첫 화면
+            });
 
     const app = document.getElementById("app");
 
@@ -108,8 +92,7 @@
         </div>
       `;
     }
-
-    showMembers();
+    
     function toggleOwned(img) {
       const key = img.dataset.key;
 
